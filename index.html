@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Font Tester</title>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .preview-text {
+            font-size: 24px;
+            margin: 20px 0;
+            padding: 10px;
+            border: 1px solid #ccc;
+            min-height: 100px;
+        }
+
+        .controls {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .font-controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+    </style>
+</head>
+<body>
+    <h1>Font Tester</h1>
+    
+    <div class="controls">
+        <div class="font-controls">
+            <label for="fontFile">Upload Font:</label>
+            <input type="file" id="fontFile" accept=".ttf,.otf,.woff,.woff2">
+        </div>
+        <div class="font-controls">
+            <label for="fontSize">Font Size:</label>
+            <input type="range" id="fontSize" min="8" max="72" value="24">
+            <span id="fontSizeDisplay">24px</span>
+        </div>
+    </div>
+
+    <div class="preview-text" contenteditable="true">
+        Type or paste your text here to preview the font...
+    </div>
+
+    <script>
+        const fontFile = document.getElementById('fontFile');
+        const previewText = document.querySelector('.preview-text');
+        const fontSize = document.getElementById('fontSize');
+        const fontSizeDisplay = document.getElementById('fontSizeDisplay');
+        let currentFontFamily = null;
+
+        fontFile.addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                try {
+                    const fontFamily = `font-${Date.now()}`;
+                    const font = new FontFace(fontFamily, await file.arrayBuffer());
+                    await font.load();
+                    document.fonts.add(font);
+                    previewText.style.fontFamily = fontFamily;
+                    currentFontFamily = fontFamily;
+                } catch (error) {
+                    alert('Error loading font: ' + error.message);
+                }
+            }
+        });
+
+        fontSize.addEventListener('input', (e) => {
+            const size = e.target.value;
+            previewText.style.fontSize = `${size}px`;
+            fontSizeDisplay.textContent = `${size}px`;
+        });
+    </script>
+</body>
+</html> 
